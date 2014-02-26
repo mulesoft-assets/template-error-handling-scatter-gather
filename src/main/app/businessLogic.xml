@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+     <data-mapper:config name="csvreport_grf" transformationGraphPath="csvreport.grf" doc:name="DataMapper"/>
+    
+     <flow name="mainFlow" doc:name="mainFlow" doc:description="This flow is the entry point to the Kick business logic.
+
+This flow should control the direction of the application, and it should be called by the different endpoints that your Kick exposes to trigger it.">
+        <flow-ref name="gatherDataFlow" doc:name="call gatherDataFlow"/>
+        <flow-ref name="aggregationFlow" doc:name="call aggregationFlow"/>
+        <flow-ref name="formatOutputFlow" doc:name="call formatOutputFlow"/>
+        <flow-ref name="outboundFlow" doc:name="call outboundFlow"/>
+        <exception-strategy ref="defaultChoiceExceptionStrategy" doc:name="Reference Exception Strategy"/>
+    </flow>
+  
+    <sub-flow name="gatherDataFlow" doc:name="gatherDataFlow">
+        <enricher source="#[payload]" target="#[flowVars['usersFromOrgA']]" doc:name="Store result in FlowVar 'usersFromOrgA'">
+            <sfdc:query config-ref="Salesforce" query="dsql:SELECT Name, Email, Username, Id  FROM User" doc:name="query all users from SalesForce instance A"/>
+        </enricher>
+        <enricher source="#[payload]" target="#[flowVars['usersFromDB']]" doc:name="Store result in FlowVar 'usersFromDB'">
+            <db:select config-ref="MySQL_Configuration"   doc:name="query all users from the DB" streaming="true">
+                <db:parameterized-query><![CDATA[SELECT * FROM users]]></db:parameterized-query>
+            </db:select>
+        </enricher>
+    </sub-flow>
+
+    <sub-flow name="aggregationFlow" doc:name="aggregationFlow">
+        <custom-transformer class="org.mule.kicks.transformers.SFDCUsersMerge" doc:name="Custom component to build merged users list"/>
+    </sub-flow>
+    
+    <sub-flow name="formatOutputFlow" doc:name="formatOutputFlow">
+        <custom-transformer class="org.mule.kicks.transformers.SortUsersList" doc:name="Custom component to sort users list"/>
+        <data-mapper:transform config-ref="csvreport_grf" doc:name="transform Collection of Maps to CSV Format"/>
+        <object-to-string-transformer doc:name="CSV Output Object to String"/>
+    </sub-flow>
+</mule>

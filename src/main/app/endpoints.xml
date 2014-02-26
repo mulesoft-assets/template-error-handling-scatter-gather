@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+	<!-- 	In this file you should declare all your inbound endpoints and from here controll the access to your application -->
+
+	<flow name="triggerFlow" processingStrategy="synchronous" doc:name="triggerFlow" doc:description="This is the simpliest entry point to start the excecution of your Kick
+Here you should:
+	* Define any inbound endpoint
+	* Handle any input parameter and transform it into the expected format by the mainFlow
+Here you should not:
+	* Run validations against external systems
+	* Choose flow of your application based on input parameters">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}"  doc:name="Start Synchronization" path="generatereport"/>
+        
+        <flow-ref name="mainFlow" doc:description="mainFlow"  doc:name="call mainFlow"/>
+    </flow>
+    
+     <flow name="outboundFlow" doc:name="outboundFlow" doc:description="This is the simpliest output point to push the result of the data processing. 
+Here you should: 
+	* Call external systems through outbound endpoints
+Here you should not: 
+	* Perform generic data transformation
+
+The outbountFlow is in this file in order to maintain the logical abstraction of the Kick.
+">
+        <set-attachment attachmentName="${attachment.name}" value="#[payload]" contentType="text/plain" doc:name="Attach report to Email" doc:description="Set CSV as attachment"/>
+        <set-payload value="${mail.body}" doc:name="Set mail body"/>
+        <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="gmailConnector" doc:name="Send mail"/>
+    </flow>
+</mule>
