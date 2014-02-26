@@ -25,7 +25,12 @@ As implemented, it gets users from a Salesforce instance and a DB table, compare
 
 # Run it! <a name="runit"/>
 
-Simple steps to get User Aggregation running 
+Simple steps to get User Aggregation running.
+
+**Note:** This particular Kick ilustrate the aggregation use case between SalesForce and a Data Base, thus it requires a DB instance to work.
+The Kick comes package with a SQL script to create the DB table that uses. 
+It is the user responsability to use that script to create the table in an available schema and change the configuration accordingly.
+The SQL script file can be found in [src/main/resources/sfdc2jdbc.sql] (../blob/master/src/main/resources/sfdc2jdbc.sql)
 
 ## Running on CloudHub <a name="runoncloudhub"/>
 
