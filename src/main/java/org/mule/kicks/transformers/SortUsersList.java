@@ -11,12 +11,14 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractMessageTransformer;
 
 /**
- * This transformer will take to list as input and create a third one that will be the merge of the previous two. The identity of an element of the list is
+ * This transformer will take to list as input and create a third one that will
+ * be the merge of the previous two. The identity of an element of the list is
  * defined by its email.
  * 
  * @author
  */
 public class SortUsersList extends AbstractMessageTransformer {
+	private static final String IDENTITY_FIELD_KEY = "Email";
 
 	public static Comparator<Map<String, String>> recordComparator = new Comparator<Map<String, String>>() {
 
@@ -33,22 +35,18 @@ public class SortUsersList extends AbstractMessageTransformer {
 			StringBuilder key = new StringBuilder();
 
 			if (StringUtils.isNotBlank(user.get("IDInA")) && StringUtils.isNotBlank(user.get("IDInB"))) {
-				key.append("~~");
-				key.append(user.get("IDInA"));
-				key.append(user.get("IDInB"));
-				key.append(user.get("Email"));
+				key.append("~~~");
+				key.append(user.get(IDENTITY_FIELD_KEY));
 			}
 
 			if (StringUtils.isNotBlank(user.get("IDInA")) && StringUtils.isBlank(user.get("IDInB"))) {
-				key.append(user.get("IDInA"));
 				key.append("~");
-				key.append(user.get("Email"));
+				key.append(user.get(IDENTITY_FIELD_KEY));
 			}
 
 			if (StringUtils.isBlank(user.get("IDInA")) && StringUtils.isNotBlank(user.get("IDInB"))) {
-				key.append("~");
-				key.append(user.get("IDInB"));
-				key.append(user.get("Email"));
+				key.append("~~");
+				key.append(user.get(IDENTITY_FIELD_KEY));
 			}
 
 			return key.toString();
