@@ -1,4 +1,4 @@
-package org.mule.kicks.transformers;
+package org.mule.templates.transformers;
 
 import java.util.Collections;
 import java.util.Comparator;

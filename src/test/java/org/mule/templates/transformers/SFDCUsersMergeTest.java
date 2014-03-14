@@ -1,4 +1,4 @@
-package org.mule.kicks.transformers;
+package org.mule.templates.transformers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
+import org.mule.templates.transformers.SFDCUsersMerge;
 
 @SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
@@ -43,37 +44,36 @@ public class SFDCUsersMergeTest {
 	}
 
 	private List<Map<String, String>> createExpectedList() {
-		Map<String, String> user0 = new HashMap<String, String>();
-		user0.put("IDInA", "0");
-		user0.put("IDInB", "");
-		user0.put("Email", "some.email.0@fakemail.com");
-		user0.put("Name", "SomeName_0");
-		user0.put("UserNameInA", "username_0_A");
-		user0.put("UserNameInB", "");
+		Map<String, String> record0 = new HashMap<String, String>();
+		record0.put("IDInA", "0");
+		record0.put("IDInB", "");
+		record0.put("Email", "some.email.0@fakemail.com");
+		record0.put("Name", "SomeName_0");
+		record0.put("UserNameInA", "username_0_A");
+		record0.put("UserNameInB", "");
 
-		Map<String, String> user1 = new HashMap<String, String>();
-		user1.put("IDInA", "1");
-		user1.put("IDInB", "1");
-		user1.put("Email", "some.email.1@fakemail.com");
-		user1.put("Name", "SomeName_1");
-		user1.put("UserNameInA", "username_1_A");
-		user1.put("UserNameInB", "username_1_B");
+		Map<String, String> record1 = new HashMap<String, String>();
+		record1.put("IDInA", "1");
+		record1.put("IDInB", "1");
+		record1.put("Email", "some.email.1@fakemail.com");
+		record1.put("Name", "SomeName_1");
+		record1.put("UserNameInA", "username_1_A");
+		record1.put("UserNameInB", "username_1_B");
 
-		Map<String, String> user2 = new HashMap<String, String>();
-		user2.put("IDInA", "");
-		user2.put("IDInB", "2");
-		user2.put("Email", "some.email.2@fakemail.com");
-		user2.put("Name", "SomeName_2");
-		user2.put("UserNameInA", "");
-		user2.put("UserNameInB", "username_2_B");
+		Map<String, String> record2 = new HashMap<String, String>();
+		record2.put("IDInA", "");
+		record2.put("IDInB", "2");
+		record2.put("Email", "some.email.2@fakemail.com");
+		record2.put("Name", "SomeName_2");
+		record2.put("UserNameInA", "");
+		record2.put("UserNameInB", "username_2_B");
 
-		List<Map<String, String>> userList = new ArrayList<Map<String, String>>();
-		userList.add(user0);
-		userList.add(user1);
-		userList.add(user2);
+		List<Map<String, String>> expectedList = new ArrayList<Map<String, String>>();
+		expectedList.add(record0);
+		expectedList.add(record1);
+		expectedList.add(record2);
 
-		return userList;
-
+		return expectedList;
 	}
 
 	private List<Map<String, String>> createUserLists(String orgId, int start, int end, boolean isFromDB) {

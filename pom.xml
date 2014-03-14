@@ -3,19 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.mule.kicks</groupId>
+	<groupId>org.mule.templates</groupId>
 	<artifactId>sfdc2jdbc-user-aggregation</artifactId>
 	<packaging>mule</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>User Aggregation Mule Kick Project</name>
+	<name>User Aggregation Anypoint template Project</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<mule.version>3.5.0-M4</mule.version>
 
-		<mule.version>3.5.0-M4-RC1</mule.version>
-		<!-- <mule.version>3.5.0-cascade</mule.version> -->
 		<eclipsePluginVersion>2.8</eclipsePluginVersion>
 		<jdkName>JavaSE-1.6</jdkName>
 		<jdk.version>1.6</jdk.version>
@@ -77,6 +76,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<useFile>false</useFile>
 					<additionalClasspathElements>
 						<additionalClasspathElement>${MULE_HOME}/conf/</additionalClasspathElement>
 						<!-- Location of the mule licence in Bamboo muleLicenseKey.lic -->
@@ -431,9 +431,12 @@
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- Connectors -->
-
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-email</artifactId>
+			<version>${mule.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- for testing -->
 		<dependency>
@@ -480,14 +483,22 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-db</artifactId>
+			<version>${mule.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- Connectors -->
+		<dependency>
+			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-module-sfdc</artifactId>
 			<version>5.4.5</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mule.transports</groupId>
-			<artifactId>mule-transport-email</artifactId>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-db</artifactId>
 			<version>${mule.version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

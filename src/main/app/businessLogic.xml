@@ -30,11 +30,11 @@ This flow should control the direction of the application, and it should be call
     </sub-flow>
 
     <sub-flow name="aggregationFlow" doc:name="aggregationFlow">
-        <custom-transformer class="org.mule.kicks.transformers.SFDCUsersMerge" doc:name="Custom component to build merged users list"/>
+        <custom-transformer class="org.mule.templates.transformers.SFDCUsersMerge" doc:name="Custom component to build merged users list"/>
     </sub-flow>
     
     <sub-flow name="formatOutputFlow" doc:name="formatOutputFlow">
-        <custom-transformer class="org.mule.kicks.transformers.SortUsersList" doc:name="Custom component to sort users list"/>
+        <custom-transformer class="org.mule.templates.transformers.SortUsersList" doc:name="Custom component to sort users list"/>
         <data-mapper:transform config-ref="csvreport_grf" doc:name="transform Collection of Maps to CSV Format"/>
         <object-to-string-transformer doc:name="CSV Output Object to String"/>
     </sub-flow>

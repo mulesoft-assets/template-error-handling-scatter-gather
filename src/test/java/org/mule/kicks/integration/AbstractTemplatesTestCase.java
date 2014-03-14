@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.mule.api.MuleException;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.schedule.Scheduler;
@@ -15,16 +16,20 @@ import org.mule.api.schedule.Schedulers;
 import org.mule.construct.Flow;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.tck.junit4.rule.DynamicPort;
 
 /**
  * This is the base test class for Kicks integration tests.
  * 
  * @author damiansima
  */
-public class AbstractKickTestCase extends FunctionalTestCase {
+public class AbstractTemplatesTestCase extends FunctionalTestCase {
 	private static final String MAPPINGS_FOLDER_PATH = "./mappings";
 	private static final String TEST_FLOWS_FOLDER_PATH = "./src/test/resources/flows/";
 	private static final String MULE_DEPLOY_PROPERTIES_PATH = "./src/main/app/mule-deploy.properties";
+
+	@Rule
+	public DynamicPort port = new DynamicPort("http.port");
 
 	@Override
 	protected String getConfigResources() {
@@ -72,24 +77,6 @@ public class AbstractKickTestCase extends FunctionalTestCase {
 
 	protected Flow getFlow(String flowName) {
 		return (Flow) muleContext.getRegistry().lookupObject(flowName);
-	}
-
-	protected SubflowInterceptingChainLifecycleWrapper getSubFlow(String flowName) {
-		return (SubflowInterceptingChainLifecycleWrapper) muleContext.getRegistry().lookupObject(flowName);
-	}
-
-	protected void runSchedulersOnce(String flowName) throws Exception {
-		Collection<Scheduler> schedulers = muleContext.getRegistry().lookupScheduler(Schedulers.flowPollingSchedulers(flowName));
-		for (final Scheduler scheduler : schedulers) {
-			scheduler.schedule();
-		}
-	}
-
-	protected void stopFlowSchedulers(String flowName) throws MuleException {
-		Collection<Scheduler> schedulers = muleContext.getRegistry().lookupScheduler(Schedulers.flowPollingSchedulers(flowName));
-		for (final Scheduler scheduler : schedulers) {
-			scheduler.stop();
-		}
 	}
 
 	protected String buildUniqueName(String kickName, String name) {
