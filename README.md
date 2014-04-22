@@ -1,4 +1,3 @@
-
 # Anypoint Template: User Aggregation
 
 + [Use Case](#usecase)
@@ -12,7 +11,6 @@
     * [endpoints.xml](#endpointsxml)
     * [businessLogic.xml](#businesslogicxml)
     * [errorHandling.xml](#errorhandlingxml)
-+ [Testing the Anypoint Template](#testingtheanypointtemplate)
 
 # Use Case <a name="usecase"/>
 As a Salesforce admin I want to aggregate users from a Salesforce Instances and a DataBase, and compare them to see which users can only be found in one of the two and which users are in both. 
@@ -153,19 +151,3 @@ If you want to change this order then the *compare* method should be modified.
 Contains a [Catch Exception Strategy](http://www.mulesoft.org/documentation/display/current/Catch+Exception+Strategy) that is only Logging the exception thrown (If so). As you imagine, this is the right place to handle how your integration will react depending on the different exceptions. 
 
 
-
-## Testing the Anypoint Template <a name="testingtheanypointtemplate"/>
-
-You will notice that the Anypoint Template has been shipped with test.
-These devidi them self into two categories:
-
-+ Unit Tests
-+ Integration Tests
-
-You can run any of them by just doing right click on the class and clicking on run as Junit test.
-
-Do bear in mind that you'll have to tell the test classes which property file to use.
-For you convinience we have added a file mule.test.properties located in "src/test/resources".
-In the run configurations of the test just make sure to add the following property:
-
-+ -Dmule.env=test
