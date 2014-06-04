@@ -23,8 +23,9 @@ This flow should control the direction of the application, and it should be call
             <sfdc:query config-ref="Salesforce" query="dsql:SELECT Name, Email, Username, Id  FROM User" doc:name="query all users from SalesForce instance A"/>
         </enricher>
         <enricher source="#[payload]" target="#[flowVars['usersFromDB']]" doc:name="Store result in FlowVar 'usersFromDB'">
-            <db:select config-ref="MySQL_Configuration"   doc:name="query all users from the DB" streaming="true">
+            <db:select config-ref="MySQL_Database_Instance"   doc:name="query all users from the DB" streaming="true">
                 <db:parameterized-query><![CDATA[SELECT * FROM users]]></db:parameterized-query>
+
             </db:select>
         </enricher>
     </sub-flow>
