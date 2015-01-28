@@ -8,19 +8,12 @@ package org.mule.kicks.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.mule.api.MuleException;
 import org.mule.api.config.MuleProperties;
-import org.mule.api.schedule.Scheduler;
-import org.mule.api.schedule.Schedulers;
 import org.mule.construct.Flow;
-import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
