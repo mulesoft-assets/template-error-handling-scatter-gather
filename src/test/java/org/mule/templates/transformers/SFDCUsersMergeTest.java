@@ -44,7 +44,6 @@ public class SFDCUsersMergeTest {
 		SFDCUsersMerge transformer = new SFDCUsersMerge();
 		List<Map<String, String>> mergedList = (List<Map<String, String>>) transformer.transform(message, "UTF-8");
 
-		System.out.println(mergedList);
 		Assert.assertEquals("The merged list obtained is not as expected", createExpectedList(), mergedList);
 
 	}
