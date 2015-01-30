@@ -160,11 +160,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sfdc.a.url `https://login.salesforce.com/services/Soap/u/26.0`
 
 #### Database Connector configuration
-+ db.host=localhost
-+ db.port=3306
-+ db.user=root
-+ db.password=
-+ db.databasename=sfdc2jdbc
++ db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`
 
 #### SMPT Services configuration
 + smtp.host `smtp.gmail.com`
