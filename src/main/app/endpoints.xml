@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
     <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="${http.port}" doc:name="HTTP Listener Configuration"/>
 
-	<!-- 	In this file you should declare all your inbound endpoints and from here controll the access to your application -->
+	<!-- In this file you should declare all your inbound endpoints in order to control the access to your application -->
 
 	<flow name="triggerFlow" processingStrategy="synchronous"  doc:description="This is the simpliest entry point to start the excecution of your Kick
 Here you should:
