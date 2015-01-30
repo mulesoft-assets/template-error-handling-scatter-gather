@@ -4,7 +4,7 @@
  * All rights reserved.  http://www.mulesoft.com
  */
 
-package org.mule.kicks.integration;
+package org.mule.templates.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +18,7 @@ import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 /**
- * This is the base test class for Kicks integration tests.
+ * This is the base test class for Templates integration tests.
  * 
  * @author damiansima
  */

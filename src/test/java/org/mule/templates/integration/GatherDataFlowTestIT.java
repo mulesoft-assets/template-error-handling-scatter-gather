@@ -4,7 +4,7 @@
  * All rights reserved.  http://www.mulesoft.com
  */
 
-package org.mule.kicks.integration;
+package org.mule.templates.integration;
 
 import java.util.Date;
 import java.util.Iterator;
