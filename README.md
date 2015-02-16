@@ -215,12 +215,11 @@ This flow has Exception Strategy that basically consists on invoking the *defaul
 ### Gather Data Flow
 Mainly consisting of two calls (Queries) one to SalesForce and one to a DB and storing each response on the Invocation Variable named *usersFromOrgA* or *usersFromDB* accordingly.
 
-### Aggregation Flow
-[Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for aggregating the results from the two Lists of Users.
+[Scatter Gather](http://www.mulesoft.org/documentation/display/current/Scatter-Gather) is responsible for aggregating the results from the two Lists of Users.
 Criteria and format applied:
-+ Transformer receives a Mule Message with the two Invocation variables *usersFromOrgA* and *usersFromDB* to result in List of Maps with keys: **Name**, **Email**, **IDInA**, **UserNameInA**, **IDInB** and 
++ Scatter Gather component implements an aggregation strategy that results in List of Maps with keys: **Name**, **Email**, **IDInA**, **UserNameInA**, **IDInB** and 
 **UserNameInB**.
-+ Users will be matched by mail, that is to say, a record in both SFDC organisations with same mail is considered the same user.
++ Users will be matched by an email, that is to say, a record in both SFDC organisations with same mail is considered the same user.
 
 ### Format Output Flow
 + [Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for sorting the list of users in the following order:

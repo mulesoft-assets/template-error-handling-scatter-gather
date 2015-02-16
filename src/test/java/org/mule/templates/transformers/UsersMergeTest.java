@@ -13,42 +13,53 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
-import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
-import org.mule.templates.transformers.SFDCUsersMerge;
 
-@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
-public class SFDCUsersMergeTest {
-	private static final String USERS_FROM_SFDC = "usersFromOrgA";
-	private static final String USERS_FROM_DB = "usersFromDB";
-
+public class UsersMergeTest {
+	
+	private List<Map<String, String>> usersSalesforce;
+	private List<Map<String, String>> usersDatabase;
+	
 	@Mock
 	private MuleContext muleContext;
 
+	@Before
+	public void setUp(){
+		usersSalesforce = createUserLists("A", 0, 1, false);		
+		usersDatabase = createUserLists("B", 1, 2, true);
+	}	
+
+	static List<Map<String, String>> createUserLists(String orgId, int start, int end, boolean isFromDB) {
+		List<Map<String, String>> userList = new ArrayList<Map<String, String>>();
+		for (int i = start; i <= end; i++) {
+			Map<String, String> user;
+			if (isFromDB) {
+				user = createDbUser(orgId, i);
+			} else {
+				user = createSfdcUser(orgId, i);
+			}
+			userList.add(user);
+		}
+		return userList;
+	}	
+	
 	@Test
-	public void testMerge() throws TransformerException {
-		List<Map<String, String>> usersA = createUserLists("A", 0, 1, false);
-		List<Map<String, String>> usersB = createUserLists("B", 1, 2, true);
+	public void testMerge() throws TransformerException {			
+		UsersMerge userMerge = new UsersMerge();
+		List<Map<String, String>> mergedList = userMerge.mergeList(usersSalesforce, usersDatabase);
 
-		MuleMessage message = new DefaultMuleMessage(null, muleContext);
-		message.setInvocationProperty(USERS_FROM_SFDC, usersA.iterator());
-		message.setInvocationProperty(USERS_FROM_DB, usersB.iterator());
-
-		SFDCUsersMerge transformer = new SFDCUsersMerge();
-		List<Map<String, String>> mergedList = (List<Map<String, String>>) transformer.transform(message, "UTF-8");
-
-		Assert.assertEquals("The merged list obtained is not as expected", createExpectedList(), mergedList);
-
+		Assert.assertEquals("The merged list obtained is not as expected",
+				createExpectedList(), mergedList);
 	}
 
-	private List<Map<String, String>> createExpectedList() {
+	static List<Map<String, String>> createExpectedList() {
 		Map<String, String> record0 = new HashMap<String, String>();
 		record0.put("IDInA", "0");
 		record0.put("IDInB", "");
@@ -79,23 +90,9 @@ public class SFDCUsersMergeTest {
 		expectedList.add(record2);
 
 		return expectedList;
-	}
-
-	private List<Map<String, String>> createUserLists(String orgId, int start, int end, boolean isFromDB) {
-		List<Map<String, String>> userList = new ArrayList<Map<String, String>>();
-		for (int i = start; i <= end; i++) {
-			Map<String, String> user;
-			if (isFromDB) {
-				user = createDbUser(orgId, i);
-			} else {
-				user = createSfdcUser(orgId, i);
-			}
-			userList.add(user);
-		}
-		return userList;
-	}
-
-	private Map<String, String> createSfdcUser(String orgId, int sequence) {
+	}	
+	
+	static Map<String, String> createSfdcUser(String orgId, int sequence) {
 		Map<String, String> user = new HashMap<String, String>();
 
 		user.put("Id", new Integer(sequence).toString());
@@ -106,7 +103,7 @@ public class SFDCUsersMergeTest {
 		return user;
 	}
 
-	private Map<String, String> createDbUser(String orgId, int sequence) {
+	static Map<String, String> createDbUser(String orgId, int sequence) {
 		Map<String, String> user = new HashMap<String, String>();
 
 		user.put("id", new Integer(sequence).toString());

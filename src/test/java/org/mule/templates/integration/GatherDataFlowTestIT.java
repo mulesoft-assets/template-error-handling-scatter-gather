@@ -9,7 +9,6 @@ package org.mule.templates.integration;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -20,7 +19,6 @@ import org.junit.Test;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
-import org.mule.streaming.ConsumerIterator;
 import org.mule.templates.builders.ObjectBuilder;
 import org.mule.templates.db.MySQLDbCreator;
 
@@ -30,12 +28,9 @@ import org.mule.templates.db.MySQLDbCreator;
  * 
  * @author damiansima
  */
-public class GatherDataFlowTestIT extends AbstractTemplatesTestCase {
-	private static Logger log = Logger.getLogger(GatherDataFlowTestIT.class);
+public class GatherDataFlowTestIT extends AbstractTemplateTestCase {
 	
-	private static final String USERS_FROM_SFDC = "usersFromOrgA";
-	private static final String USERS_FROM_DB = "usersFromDB";
-	
+	private static Logger log = Logger.getLogger(GatherDataFlowTestIT.class);	
 	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
 	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/sfdc2jdbc.sql";
 	private static final String DATABASE_NAME = "SFDC2DBAccountBroadcast" + new Long(new Date().getTime()).toString();
@@ -61,20 +56,15 @@ public class GatherDataFlowTestIT extends AbstractTemplatesTestCase {
 	
 	@Test
 	public void testGatherDataFlow() throws Exception {
-		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("gatherDataFlow");
+		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("gatherDataFlow");		
+		flow.setMuleContext(muleContext);
 		flow.initialise();
-
+		flow.start();
+		
 		MuleEvent event = flow.process(getTestEvent("", MessageExchangePattern.REQUEST_RESPONSE));
-		Set<String> flowVariables = event.getFlowVariableNames();
-
-		Assert.assertTrue("The variable usersFromOrgA is missing.", flowVariables.contains(USERS_FROM_SFDC));
-		Assert.assertTrue("The variable usersFromOrgB is missing.", flowVariables.contains(USERS_FROM_DB));
-
-		ConsumerIterator<Map<String, String>> usersFromOrgA = event.getFlowVariable(USERS_FROM_SFDC);
-		Iterator usersFromOrgB = event.getFlowVariable(USERS_FROM_DB);
-
-		Assert.assertTrue("There should be users in the variable usersFromOrgA.", usersFromOrgA.size() != 0);
-		Assert.assertTrue("There should be users in the variable usersFromOrgB.", usersFromOrgB.hasNext());
+		Iterator<Map<String, String>> mergedList = (Iterator<Map<String, String>>)event.getMessage().getPayload();
+		
+		Assert.assertTrue("There should be contacts from source A or source B.", mergedList.hasNext());
 	}
 	
 	private Map<String, Object> createDbUser() {

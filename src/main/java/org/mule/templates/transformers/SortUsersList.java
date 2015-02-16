@@ -69,7 +69,7 @@ public class SortUsersList extends AbstractMessageTransformer {
 		Collections.sort(sortedUsersList, recordComparator);
 
 		return sortedUsersList;
-
 	}
+
 
 }

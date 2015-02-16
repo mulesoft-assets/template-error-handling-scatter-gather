@@ -8,33 +8,29 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
      <data-mapper:config name="csvreport_grf" transformationGraphPath="csvreport.grf" doc:name="DataMapper"/>
     
-     <flow name="mainFlow" doc:name="mainFlow" doc:description="This flow is the entry point to the Kick business logic.
+     <flow name="mainFlow"  doc:description="This flow is the entry point to the Kick business logic.
 
 This flow should control the direction of the application, and it should be called by the different endpoints that your Kick exposes to trigger it.">
         <flow-ref name="gatherDataFlow" doc:name="call gatherDataFlow"/>
-        <flow-ref name="aggregationFlow" doc:name="call aggregationFlow"/>
+
         <flow-ref name="formatOutputFlow" doc:name="call formatOutputFlow"/>
         <flow-ref name="outboundFlow" doc:name="call outboundFlow"/>
         <exception-strategy ref="defaultChoiceExceptionStrategy" doc:name="Reference Exception Strategy"/>
     </flow>
   
-    <sub-flow name="gatherDataFlow" doc:name="gatherDataFlow">
-        <enricher source="#[payload]" target="#[flowVars['usersFromOrgA']]" doc:name="Store result in FlowVar 'usersFromOrgA'">
+    <sub-flow name="gatherDataFlow" >
+        <scatter-gather doc:name="Scatter-Gather">
+            <custom-aggregation-strategy class="org.mule.templates.transformers.UserMergeAggregationStrategy"/>
             <sfdc:query config-ref="Salesforce" query="dsql:SELECT Name, Email, Username, Id  FROM User" doc:name="query all users from SalesForce instance A"/>
-        </enricher>
-        <enricher source="#[payload]" target="#[flowVars['usersFromDB']]" doc:name="Store result in FlowVar 'usersFromDB'">
-            <db:select config-ref="MySQL_Database_Instance"   doc:name="query all users from the DB" streaming="true">
+            <db:select config-ref="MySQL_Database_Instance" streaming="true" doc:name="query all users from the DB">
                 <db:parameterized-query><![CDATA[SELECT * FROM users]]></db:parameterized-query>
-
             </db:select>
-        </enricher>
+        </scatter-gather>
+
     </sub-flow>
 
-    <sub-flow name="aggregationFlow" doc:name="aggregationFlow">
-        <custom-transformer class="org.mule.templates.transformers.SFDCUsersMerge" doc:name="Custom component to build merged users list"/>
-    </sub-flow>
     
-    <sub-flow name="formatOutputFlow" doc:name="formatOutputFlow">
+    <sub-flow name="formatOutputFlow" >
         <custom-transformer class="org.mule.templates.transformers.SortUsersList" doc:name="Custom component to sort users list"/>
         <data-mapper:transform config-ref="csvreport_grf" doc:name="transform Collection of Maps to CSV Format"/>
         <object-to-string-transformer doc:name="CSV Output Object to String"/>
