@@ -100,6 +100,10 @@ column='486'
 
 
 
+
+
+
+
 # Run it! <a name="runit"/>
 Simple steps to get Salesforce to Database User Aggregation running.
 
@@ -157,7 +161,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sfdc.a.username `bob.dylan@orga`
 + sfdc.a.password `DylanPassword123`
 + sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.a.url `https://login.salesforce.com/services/Soap/u/26.0`
++ sfdc.a.url `https://login.salesforce.com/services/Soap/u/32.0`
 
 #### Database Connector configuration
 + db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`
@@ -215,7 +219,7 @@ This flow has Exception Strategy that basically consists on invoking the *defaul
 ### Gather Data Flow
 Mainly consisting of two calls (Queries) one to SalesForce and one to a DB and storing each response on the Invocation Variable named *usersFromOrgA* or *usersFromDB* accordingly.
 
-[Scatter Gather](http://www.mulesoft.org/documentation/display/current/Scatter-Gather) is responsible for aggregating the results from the two Lists of Users.
+[Scatter Gather](http://www.mulesoft.org/documentation/display/current/Scatter-Gather) is responsible for aggregating the results from the two collections of Users.
 Criteria and format applied:
 + Scatter Gather component implements an aggregation strategy that results in List of Maps with keys: **Name**, **Email**, **IDInA**, **UserNameInA**, **IDInB** and 
 **UserNameInB**.
