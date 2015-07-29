@@ -10,14 +10,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>template-sfdc2db-user-aggregation</artifactId>
 	<packaging>mule</packaging>
-	<version>1.2.1</version>
+	<version>1.2.2-SNAPSHOT</version>
 	<name>template-sfdc2db-user-aggregation Mule Anypoint Template Project</name>
 
 	<scm>
 		<connection>scm:git:https://github.com/mulesoft/template-sfdc2db-user-aggregation.git</connection>
 		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2db-user-aggregation.git</developerConnection>
 		<url>https://github.com/mulesoft/template-sfdc2db-user-aggregation</url>
-		<tag>v1.2.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<build>
