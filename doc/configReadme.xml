@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
 	<placeholders>
-		<placeholder id="template_name">Salesforce to Database User Aggregation</placeholder>
+		<placeholder id="template_name">Salesforce and Database User Aggregation</placeholder>
 	</placeholders>
 	<sections>
 		<section id="use_case">
@@ -38,10 +38,10 @@ After this, to trigger the use case you just need to hit the local http endpoint
 + http.port `9090` 
 
 #### SalesForce Connector configuration for company A
-+ sfdc.a.username `bob.dylan@orga`
-+ sfdc.a.password `DylanPassword123`
-+ sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.a.url `https://login.salesforce.com/services/Soap/u/32.0`
++ sfdc.username `bob.dylan@orga`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
++ sfdc.url `https://login.salesforce.com/services/Soap/u/32.0`
 
 #### Database Connector configuration
 + db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`

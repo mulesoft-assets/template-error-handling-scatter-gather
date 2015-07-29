@@ -34,17 +34,16 @@ This flow should control the direction of the application, and it should be call
         <custom-transformer class="org.mule.templates.transformers.SortUsersList" doc:name="Custom component to sort users list"/>
         <dw:transform-message doc:name="Map Collection to CSV">
             <dw:set-payload><![CDATA[%dw 1.0
-%input payload application/java
 %output application/csv
 ---
 payload map
 {
-	Name: $.Name when ($.Name != null) otherwise "",
-	Mail: $.Email when ($.Email != null) otherwise "",
-	IDInA: $.IDInA when ($.IDInA != null) otherwise "",
-	UserNameInA: $.UserNameInA when ($.UserNameInA != null) otherwise "",
-	IDInB: $.IDInB when ($.IDInB != null) otherwise "",
-	UserNameInB: $.UserNameInB when ($.UserNameInB != null) otherwise ""
+	Name: $.Name,
+	Mail: $.Email,
+	IDInA: $.IDInA,
+	UserNameInA: $.UserNameInA,
+	IDInB: $.IDInB,
+	UserNameInB: $.UserNameInB
 }]]></dw:set-payload>
         </dw:transform-message>
 

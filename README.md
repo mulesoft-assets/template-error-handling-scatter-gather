@@ -1,5 +1,5 @@
 
-# Anypoint Template: Salesforce to Database User Aggregation
+# Anypoint Template: Salesforce and Database User Aggregation
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -105,7 +105,7 @@ column='486'
 
 
 # Run it! <a name="runit"/>
-Simple steps to get Salesforce to Database User Aggregation running.
+Simple steps to get Salesforce and Database User Aggregation running.
 
 
 ## Running on premise <a name="runonopremise"/>
@@ -158,10 +158,10 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + http.port `9090` 
 
 #### SalesForce Connector configuration for company A
-+ sfdc.a.username `bob.dylan@orga`
-+ sfdc.a.password `DylanPassword123`
-+ sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.a.url `https://login.salesforce.com/services/Soap/u/32.0`
++ sfdc.username `bob.dylan@orga`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
++ sfdc.url `https://login.salesforce.com/services/Soap/u/32.0`
 
 #### Database Connector configuration
 + db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`
