@@ -261,5 +261,7 @@ This Anypoint Template has an [HTTP Inbound Endpoint](http://www.mulesoft.org/do
 This is the right place to handle how your integration will react depending on the different exceptions. 
 This file holds a [Choice Exception Strategy](http://www.mulesoft.org/documentation/display/current/Choice+Exception+Strategy) that is referenced by the main flow in the business logic.
 
+All included connectors supports [Reconnection Strategies](https://docs.mulesoft.com/mule-user-guide/v/3.7/configuring-reconnection-strategies). Reconnection Strategies specify how a connector behaves when its connection fails. In this template all connectors have standard reconnection strategy specified to 5 reconnection attempts with frequency 5000ms. You can change reconnection strategy in connector configuration window by selecting tab *Reconnection*.
+
 
 
