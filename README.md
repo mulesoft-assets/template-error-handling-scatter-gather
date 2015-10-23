@@ -261,6 +261,18 @@ This Anypoint Template has an [HTTP Inbound Endpoint](http://www.mulesoft.org/do
 This is the right place to handle how your integration will react depending on the different exceptions. 
 This file holds a [Choice Exception Strategy](http://www.mulesoft.org/documentation/display/current/Choice+Exception+Strategy) that is referenced by the main flow in the business logic.
 
+If there is an error in *gatherDataFlow* when obtaining data for aggregation, it will be at first handled in *UserMergeAggregationStrategy* class. Scatter-gather component is using this custom aggregation strategy class which overrides its default aggregation strategy to perform aggregation of the retrieved data with desired error handling. For more details click [here](https://docs.mulesoft.com/mule-user-guide/v/3.7/scatter-gather#scatter-gather-behavior-and-exceptions). After that an error will be routed to errorHandling.xml.
+
+In the case no data could be obtained from connectors, relevant error will be thrown out of the *UserMergeAggregationStrategy* class. In the errorHandling.xml it will be routed to the correct catch block under the *defaultChoiceExceptionStrategy*. Each error specified in the catch block can be treated different way. Now there are three different kinds of errors specified:
+
++ *LoginFault* Exception - occurs in the case of incorrect Salesforce credentials
++ *InvalidFieldFault* Exception - occurs in the case of incorrect column name in the Salesforce query
++ *Exception* - any other exception except the previous two
+
+New exceptions can be added and treated required way in errorHandling.xml file.
+
+Data obtained from just one route while the one one failed is considered recoverable scenario. No error message is logged and data from one route are processed expected way. This can be changed in the *UserMergeAggregationStrategy* class.
+
 All included connectors supports [Reconnection Strategies](https://docs.mulesoft.com/mule-user-guide/v/3.7/configuring-reconnection-strategies). Reconnection Strategies specify how a connector behaves when its connection fails. In this template all connectors have standard reconnection strategy specified to 5 reconnection attempts with frequency 5000ms. You can change reconnection strategy in connector configuration window by selecting tab *Reconnection*.
 
 

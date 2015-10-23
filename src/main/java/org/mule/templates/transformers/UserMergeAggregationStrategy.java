@@ -34,10 +34,10 @@ public class UserMergeAggregationStrategy implements AggregationStrategy {
 		
 		List<Map<String, String>> listA = new ArrayList<Map<String,String>>();
 		List<Map<String, String>> listB = new ArrayList<Map<String,String>>();
-		
-		// there have to be exactly 2 sources (A and B)
+
 		if (muleEventsWithoutExceptionCount == 0) {
-//			throw new IllegalArgumentException("There have to be exactly 2 sources (A and B).");
+//			cannot be logged in detail in errorHandling.xml
+//			throw new CompositeRoutingException(context.getOriginalEvent(), context.collectRouteExceptions());
 			for (Entry<Integer, Throwable> exception : context.collectRouteExceptions().entrySet()) {
 				throw new MuleException(exception.getValue()) {
 					private static final long serialVersionUID = -9077958461217982556L;
