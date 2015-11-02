@@ -221,6 +221,7 @@ Mainly consisting of two calls (Queries) one to SalesForce and one to a DB and s
 
 [Scatter Gather](http://www.mulesoft.org/documentation/display/current/Scatter-Gather) is responsible for aggregating the results from the two collections of Users.
 Criteria and format applied:
+
 + Scatter Gather component implements an aggregation strategy that results in List of Maps with keys: **Name**, **Email**, **IDInA**, **UserNameInA**, **IDInB** and 
 **UserNameInB**.
 + Users will be matched by an email, that is to say, a record in both SFDC organisations with same mail is considered the same user.
@@ -246,12 +247,14 @@ This Anypoint Template has an [HTTP Inbound Endpoint](http://www.mulesoft.org/do
 
 ### Trigger Flow
 **HTTP Inbound Endpoint** - Start Report Generation
+
 + `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
 + The path configured by default is `generatereport` and you are free to change for the one you prefer.
 + The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
 
 ### Outbound Flow
 **SMTP Outbound Endpoint** - Send Mail
+
 + Both SMTP Server configuration and the actual mail to be sent are defined in this endpoint.
 + This flow is going to be invoked from the flow that does all the functional work: *mainFlow*, the same that is invoked from the Inbound Flow upon triggering of the HTTP Endpoint.
 
@@ -266,7 +269,7 @@ If there is an error in *gatherDataFlow* when obtaining data for aggregation, it
 In the case no data could be obtained from connectors, relevant error will be thrown out of the *UserMergeAggregationStrategy* class. In the errorHandling.xml it will be routed to the correct catch block under the *defaultChoiceExceptionStrategy*. Each error specified in the catch block can be treated different way. Now there are three different kinds of errors specified:
 
 + *LoginFault* Exception - occurs in the case of incorrect Salesforce credentials
-+ *InvalidFieldFault* Exception - occurs in the case of incorrect column name in the Salesforce query
++ *InvalidFieldFault* Exception - occurs in the case that newly added column name in the Salesforce query is not present in the specified table 
 + *Exception* - any other exception except the previous two
 
 New exceptions can be added and treated required way in errorHandling.xml file.

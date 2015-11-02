@@ -14,9 +14,9 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
             </tracking:custom-event>
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causedExactlyBy(com.sforce.soap.partner.fault.InvalidFieldFault)]" doc:name="Catch InvalidFieldFault Exception">
-            <logger message="Incorrect Salesforce column name. Please, check the &quot;query all users from SalesForce instance A&quot; component" level="ERROR" doc:name="Logger"/>
+            <logger message="Incorrect Salesforce column name. Please, check the &quot;query all users from SalesForce instance A&quot; component if all columns belong to the specified table" level="ERROR" doc:name="Logger"/>
             <tracking:custom-event event-name="Incorrect Salesforce column name" doc:name="Custom Business Event">
-                <tracking:meta-data key="possible solution" value="Please, check the &quot;query all users from SalesForce instance A&quot; component"/>
+                <tracking:meta-data key="possible solution" value="Please, check the &quot;query all users from SalesForce instance A&quot; component if all columns belong to the specified table"/>
             </tracking:custom-event>
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causedBy(java.lang.Exception)]" doc:name="Catch Exception Strategy">
