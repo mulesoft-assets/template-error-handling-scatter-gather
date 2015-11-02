@@ -36,8 +36,6 @@ public class UserMergeAggregationStrategy implements AggregationStrategy {
 		List<Map<String, String>> listB = new ArrayList<Map<String,String>>();
 
 		if (muleEventsWithoutExceptionCount == 0) {
-//			cannot be logged in detail in errorHandling.xml
-//			throw new CompositeRoutingException(context.getOriginalEvent(), context.collectRouteExceptions());
 			for (Entry<Integer, Throwable> exception : context.collectRouteExceptions().entrySet()) {
 				throw new MuleException(exception.getValue()) {
 					private static final long serialVersionUID = -9077958461217982556L;
