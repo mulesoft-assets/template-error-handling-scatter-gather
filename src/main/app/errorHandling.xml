@@ -8,19 +8,19 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
     
     <choice-exception-strategy name="defaultChoiceExceptionStrategy">
         <catch-exception-strategy when="#[exception.causedExactlyBy(com.sforce.soap.partner.fault.LoginFault)]" doc:name="Catch LoginFault Exception">
-            <logger level="ERROR" doc:name="Logger" message="Invalid Salesforce credentials, security token or user locked out. Please, check if credentials weren't changed."/>
+            <logger level="ERROR" doc:name="Log error message" message="Invalid Salesforce credentials, security token or user locked out. Please, check if credentials weren't changed."/>
             <tracking:custom-event event-name="Invalid Salesforce credentials, security token or user locked out" doc:name="Custom Business Event">
                 <tracking:meta-data key="possible solution" value="Please, check if credentials weren't changed."/>
             </tracking:custom-event>
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causedExactlyBy(com.sforce.soap.partner.fault.InvalidFieldFault)]" doc:name="Catch InvalidFieldFault Exception">
-            <logger message="Incorrect Salesforce column name. Please, check the &quot;query all users from SalesForce instance A&quot; component if all columns belong to the specified table" level="ERROR" doc:name="Logger"/>
+            <logger message="Incorrect Salesforce column name. Please, check the &quot;query all users from SalesForce instance A&quot; component if all columns belong to the specified table" level="ERROR" doc:name="Log error message"/>
             <tracking:custom-event event-name="Incorrect Salesforce column name" doc:name="Custom Business Event">
                 <tracking:meta-data key="possible solution" value="Please, check the &quot;query all users from SalesForce instance A&quot; component if all columns belong to the specified table"/>
             </tracking:custom-event>
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causedBy(java.lang.Exception)]" doc:name="Catch Exception Strategy">
-            <logger message="#[payload]" level="ERROR" doc:name="Logger"/>
+            <logger message="#[payload]" level="ERROR" doc:name="Log error message"/>
             <tracking:custom-event event-name="ERROR" doc:name="Custom Business Event">
                 <tracking:meta-data key="payload" value="#[payload]"/>
             </tracking:custom-event>

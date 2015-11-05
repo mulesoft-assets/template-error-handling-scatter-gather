@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
 	<placeholders>
-		<placeholder id="template_name">Salesforce and Database User Aggregation</placeholder>
+		<placeholder id="template_name">Error Handling Scatter Gather</placeholder>
 	</placeholders>
 	<sections>
 		<section id="use_case">
@@ -9,7 +9,7 @@ As a Salesforce admin I want to aggregate users from a Salesforce Instances and 
 
 For practical purposes this Anypoint Template will generate the result in the format of a CSV Report sent by mail.
 
-This Anypoint Template should serve as a foundation for extracting data from two systems, aggregating data, comparing values of fields for the objects, and generating a report on the differences. 
+This Anypoint Template should serve as a foundation for extracting data from two systems, aggregating data, comparing values of fields for the objects, and generating a report on the differences and demonstrate the custom exception handling. 
 
 As implemented, it gets users from a Salesforce instance and a DB table, compares by the email address of the users, and generates a CSV file which shows users in A, users in B (being "B" the DB), and Users in A and B. The report is then emailed to a configured group of email addresses.
 		</section>
@@ -46,7 +46,7 @@ After this, to trigger the use case you just need to hit the local http endpoint
 #### Database Connector configuration
 + db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`
 
-#### SMPT Services configuration
+#### SMTP Services configuration
 + smtp.host `smtp.gmail.com`
 + smtp.port `587`
 + smtp.user `exampleuser@gmail.com`
@@ -133,7 +133,7 @@ If there is an error in *gatherDataFlow* when obtaining data for aggregation, it
 In the case no data could be obtained from connectors, relevant error will be thrown out of the *UserMergeAggregationStrategy* class. In the errorHandling.xml it will be routed to the correct catch block under the *defaultChoiceExceptionStrategy*. Each error specified in the catch block can be treated different way. Now there are three different kinds of errors specified:
 
 + *LoginFault* Exception - occurs in the case of incorrect Salesforce credentials
-+ *InvalidFieldFault* Exception - occurs in the case that newly added column name in the Salesforce query is not present in the specified table 
++ *InvalidFieldFault* Exception - occurs in the case that newly added column name in the Salesforce query is not present in the specified table (could be used for the custom defined fields)
 + *Exception* - any other exception except the previous two
 
 New exceptions can be added and treated required way in errorHandling.xml file.
