@@ -31,41 +31,41 @@ To make the application running, it's required to configure the application as f
 http.port `9090` 
 
 #### SalesForce Connector configuration for company A
-sfdc.username `bob.dylan@orga`
-sfdc.password `DylanPassword123`
-sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-sfdc.url `https://login.salesforce.com/services/Soap/u/32.0`
++ sfdc.username `bob.dylan@orga`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
++ sfdc.url `https://login.salesforce.com/services/Soap/u/32.0`
 
 #### Database Connector configuration
-db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`
++ db.jdbcUrl `jdbc:mysql://localhost:3306/sfdc2jdbc?rewriteBatchedStatements=true&user=root&password=password`
 
 #### SMTP Services configuration
-smtp.host `smtp.gmail.com`
-smtp.port `587`
-smtp.user `exampleuser@gmail.com`
-smtp.password `ExamplePassword456`
++ smtp.host `smtp.gmail.com`
++ smtp.port `587`
++ smtp.user `exampleuser@gmail.com`
++ smtp.password `ExamplePassword456`
 
 #### Mail details
-mail.from `exampleuser@gmail.com`
-mail.to `woody.guthrie@gmail.com`
-mail.subject `SFDC Users Report`
-mail.body `Users report comparing users from SFDC Accounts`
-attachment.name `OrderedReport.csv`
++ mail.from `exampleuser@gmail.com`
++ mail.to `woody.guthrie@gmail.com`
++ mail.subject `SFDC Users Report`
++ mail.body `Users report comparing users from SFDC Accounts`
++ attachment.name `OrderedReport.csv`
 
 ### How it Works ###
-The application is structured to the several files based on the functional aspect.
+The application is structured in the several files based on the functional aspect.
 
 #### default_endpoints_xml
 This is the file where you will found the inbound and outbound sides of your integration app.
 This Anypoint Template has an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentation/display/current/HTTP+Endpoint+Reference) as the way to trigger the use case and an [SMTP Transport](http://www.mulesoft.org/documentation/display/current/SMTP+Transport+Reference) as the outbound way to send the report.
 
-$H$H# Trigger Flow
+Trigger Flow
 **HTTP Inbound Endpoint** - Start Report Generation
 `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
 The path configured by default is `generatereport` and you are free to change for the one you prefer.
 The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
 
-$H$H# Outbound Flow
+Outbound Flow
 **SMTP Outbound Endpoint** - Send Mail
 
 Both SMTP Server configuration and the actual mail to be sent are defined in this endpoint.
@@ -76,8 +76,7 @@ Functional aspect of the Anypoint Template is implemented on this XML, directed 
 The *mainFlow* organises the job in three different steps and finally invokes the *outboundFlow* that will deliver the report to the corresponding outbound endpoint.
 This flow has Exception Strategy that basically consists on invoking the *defaultChoiseExceptionStrategy* defined in *errorHandling.xml* file.
 
-
-$H$H# Gather Data Flow
+Gather Data Flow
 Mainly consisting of two calls (Queries) one to SalesForce and one to a DB and storing each response on the Invocation Variable named *usersFromOrgA* or *usersFromDB* accordingly.
 
 [Scatter Gather](http://www.mulesoft.org/documentation/display/current/Scatter-Gather) is responsible for aggregating the results from the two collections of Users.
@@ -87,7 +86,7 @@ Scatter Gather component implements an aggregation strategy that results in List
 **UserNameInB**.
 Users will be matched by an email, that is to say, a record in both SFDC organisations with same mail is considered the same user.
 
-$H$H# Format Output Flow
+Format Output Flow
 [Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for sorting the list of users in the following order:
 
 1. Users only in Org A
