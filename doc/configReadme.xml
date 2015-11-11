@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<configuration>
+	<placeholders>
+		<placeholder id="template_name">Salesforce and Database Account Aggregation</placeholder>
+	</placeholders>
+	<sections>
+		<section id="use_case">
+I want to aggregate accounts from Salesforce and Database Instances and compare them to see which accounts can only be found in one of the two and which accounts are in both instances. 
+
+For practical purposes this Template will generate the result in the format of a CSV Report sent by mail.
+
+This Template should serve as a foundation for extracting data from two systems, aggregating data, comparing values of fields for the objects, and generating a report on the differences. 
+
+As implemented, it gets two accounts, one from Salesforce and other from Database instance. Then it compares by the name of the accounts, and generates a CSV file which shows accounts in A, accounts in B, and accounts in A and B. The report is then e-mailed to a configured group of e-mail addresses.
+		</section>
+		<section id="considerations">
+<![CDATA[
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly. **Failling to do so could lead to unexpected behavior of the template.**
+
+**Note:** This particular Anypoint Template illustrate the aggregation use case between SalesForce and a Database, thus it requires a DB instance to work.
+The Anypoint Template comes package with a MySQL script to create the DB table that uses. 
+It is the user responsibility to use that script to create the table in an available schema and change the configuration accordingly.
+The SQL script file can be found in [src/main/resources/sfdc2jdbc.sql](../master/src/main/resources/sfdc2jdbc.sql)
+
+This template is customized for MySQL. To use it with different SQL implementation, some changes are necessary:
+
+* update SQL script dialect to desired one
+* replace MySQL driver library dependency to desired one in [POM](pom.xml)
+* replace attribute `driverClassName` of `db:generic-config` element with class name of desired JDBC driver in [src/main/app/config.xml](../master/src/main/app/config.xml)
+* update JDBC URL in `mule.*.properties` file
+]]>
+		</section>
+		<section id="running_on_cloudhub">
+<![CDATA[
+Once your app is all set and started, supposing you choose as domain name `sfdc2db-account-aggregation` to trigger the use case you just need to hit `http://sfdc2db-account-aggregation.cloudhub.io/generatereport` and report will be sent to the e-mail addresses configured.
+]]>
+		</section>
+		<section id="running_on_standalone">
+<![CDATA[
+After this, to trigger the use case you just need to hit the local HTTP endpoint with the port you configured in your file. If this is, for instance, `9090` then you should hit: `http://localhost:9090/generatereport` and this will create a CSV report and send it to the mails set.
+]]>
+		</section>
+		<section id="application_configuration">
+		<![CDATA[
+#### HTTP Connector configuration		
++ http.port `9090` 
+
+#### SalesForce Connector configuration
++ sfdc.username `bob.dylan@org`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
++ sfdc.url `https://login.salesforce.com/services/Soap/u/32.0`
+
+#### Database Connector configuration
++ db.jdbcUrl `jdbc:mysql://localhost:3306/mule?user=joan.baez&password=JoanBaez456`
+
+#### SMTP Services configuration
++ smtp.host `smtp.gmail.com`
++ smtp.port `587`
++ smtp.user `exampleuser@gmail.com`
++ smtp.password `ExamplePassword456`
+
+#### Mail details
++ mail.from `exampleuser@gmail.com`
++ mail.to `woody.guthrie@gmail.com`
++ mail.subject `Accounts Report`
++ mail.body `Please find attached your Accounts Report`
++ attachment.name `accounts_report.csv`
+]]>
+		</section>
+		<section id="api_calls">
+		<![CDATA[
+Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. The Anypoint Template calls to the API can be calculated using the formula:
+
+***1 + X + X / 200***
+
+Being ***X*** the number of Accounts to be synchronized on each run. 
+
+The division by ***200*** is because, by default, Accounts are gathered in groups of 200 for each Upsert API Call in the commit step. Also consider that this calls are executed repeatedly every polling cycle.	
+
+For instance if 10 records are fetched from origin instance, then 12 api calls will be made (1 + 10 + 1).
+]]>
+		</section>
+		<section id="default_endpoints_xml">
+		<![CDATA[
+This is the file where you will found the inbound and outbound sides of your integration app. This Template has an HTTP Inbound Endpoint as the way to trigger the use case and an SMTP Transport as the outbound way to send the report.
+
+$H$H# Trigger Flow
+**HTTP Inbound Endpoint** - Start Report Generation
++ `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
++ The path configured by default is `generatereport` and you are free to change for the one you prefer.
++ The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
+
+$H$H# Outbound Flow
+**SMTP Outbound Endpoint** - Send Mail
++ Both SMTP Server configuration and the actual mail to be sent are defined in this endpoint.
++ This flow is going to be invoked from the flow that does all the functional work: *mainFlow*, the same that is invoked from the Inbound Flow upon triggering of the HTTP Endpoint.
+]]>
+		</section>
+		<section id="default_business_logic_xml">
+		<![CDATA[
+Functional aspect of the Template is implemented on this XML, directed by one flow responsible of conducting the aggregation of data, comparing records and finally formating the output, in this case being a report.
+The *mainFlow* organizes the job in three different steps and finally invokes the *outboundFlow* that will deliver the report to the corresponding outbound endpoint.
+This flow has Exception Strategy that basically consists on invoking the *defaultChoiseExceptionStrategy* defined in *errorHandling.xml* file.
+
+$H$H# Gather Data Flow
+Mainly consisting of two calls (Queries) to SalesForce and storing each response on the Invocation Variable named *accountsFromSalesforce* or *accountsFromDatabase* accordingly.
+
+$H$H# Aggregation Flow
+[Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for aggregating the results from the two SalesForce Org Users.
+Criteria and format applied:
++ Transformer receives a Mule Message with the two Invocation variables *accountsFromSalesforce* and *accountsFromDatabase* to result in List of Maps with keys: **Name**, **IDInSalesforce**, **IndustryInSalesforce**, **NumberOfEmployeesInSalesforce**, **IDInDatabase**, **IndustryInDatabase**, **numberOfEmployeesInDatabase**.
+
++ Accounts will be matched by Name, that is to say, a record in both instances with same Name is considered the same account.
+
+$H$H# Format Output Flow
++ [Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for sorting the list of users in the following order:
+
+1. Accounts only in Salesforce
+2. Accounts only in Database
+3. Accounts in both Salesforce and Database
+
+All records ordered alphabetically by name within each category.
+If you want to change this order then the *compare* method should be modified.
+
++ CSV Report [DataWeave](https://developer.mulesoft.com/docs/display/current/DataWeave+Reference+Documentation) transforming the List of Maps in CSV with headers **Name**, **IDInSalesforce**, **IndustryInSalesforce**, **NumberOfEmployeesInSalesforce**, **IDInDatabase**, **IndustryInDatabase**, **numberOfEmployeesInDatabase**.
++ An [Object to string transformer](http://www.mulesoft.org/documentation/display/current/Transformers) is used to set the payload as an String. 
+]]>
+		</section>
+	</sections>
+</configuration>
