@@ -9,8 +9,7 @@ This document describes the details of the example within the context of Anypoin
 
 ### Use Case ###
 
-This application aggregates users from a Salesforce Instance and a Database, compares the records to avoid duplication and then tranfers it to a CSV file which is then sent as an attachment via email. The example demostrates error handling, which could raise during the aggregation processing of Scatter Gather. 
-
+This application aggregates users from a Salesforce Instance and a Database, compares the records to avoid duplication and then tranfers it to a CSV file which is then sent as an attachment via email. This application also shows you how to define and handle exceptions such as issue with login, field mismatch between the different source systems and so on.
 
 
 ### Set Up and Run the Example ###
