@@ -1,33 +1,35 @@
 ﻿# Error handling of Scatter Gather in the Salesforce and Database Aggregation template ###
 
-This example illustrates how to handle custom exception in the Salesforce and Database template.
+This application illustrates how to handle custom exceptions through an example of integrating Salesforce and a MySQL Database.
 
 ### Assumptions ###
 
 This document assumes that you are familiar with Mule and the [Anypoint™ Studio interface](http://www.mulesoft.org/documentation/display/current/Anypoint+Studio+Essentials). To increase your familiarity with Studio, consider completing one or more [Anypoint Studio Tutorials](http://www.mulesoft.org/documentation/display/current/Basic+Studio+Tutorial). Further, this example assumes that you have a basic understanding of [Mule flows](http://www.mulesoft.org/documentation/display/current/Mule+Application+Architecture), [Mule Global Elements](http://www.mulesoft.org/documentation/display/current/Global+Elements) and Scatter Gather component [Scatter Gather](http://www.mulesoft.org/documentation/display/current/scatter-gather)
 This document describes the details of the example within the context of Anypoint Studio, Mule ESB’s graphical user interface.
 
-### Example Use Case ###
+### Use Case ###
 
-Through an example, the main goal is to aggregate users from a Salesforce Instances and a Database, and compare them to see which users can only be found in one of the two and which users are in both. The example demostrates error handling, which could raise during the aggregation processing of Scatter Gather. 
-For practical purposes this Anypoint Template will generate the result in the format of a CSV Report sent by mail.
+This application aggregates users from a Salesforce Instance and a Database, compares the records to avoid duplication and then tranfers it to a CSV file which is then sent as an attachment via email. The example demostrates error handling, which could raise during the aggregation processing of Scatter Gather. 
+
 
 
 ### Set Up and Run the Example ###
 
 Complete the following procedure to create, then run this example in your own instance of Anypoint Studio. 
 
-To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly. **Failling to do so could lead to unexpected behavior of the template.**
+There are certain conditions that need to be met in order for this application to work as expected. They have been explained below.**Failling to do so could lead to unexpected behavior of the template.**
 
 **Note:** This particular Anypoint Template ilustrate the aggregation use case between SalesForce and a Database, thus it requires a DB instance to work.
 The Anypoint Template comes package with a SQL script to create the DB table that uses. 
-It is the user responsability to use that script to create the table in an available schema and change the configuration accordingly.
+We expect the user of the application to utilize the script to create a table with the appropriate schema.
 The SQL script file can be found in [src/main/resources/sfdc2jdbc.sql] (../master/src/main/resources/sfdc2jdbc.sql)
 
-After this, to trigger the use case you just need to hit the local http endpoint with the port you configured in your file. If this is, for instance, `9090` then you should hit: `http://localhost:9090/synccontacts` and this will create a CSV report and send it to the mails set.
+To trigger the use case you just need to make a call to the local http endpoint at the port you configured in your file. If this is, for instance, `9090` then you should hit: `http://localhost:9090/synccontacts` and this will create a CSV report and send it via email.
 
 ### Application Configuration ###
-To make the application running, it's required to configure the application as follows. The configuration files is located for the chosen environment in the [src/main/resources/mule.env.properties]
+To make the application run, it's required to configure the different end points involved. The configuration files is located for the chosen environment in the [src/main/resources/mule.env.properties]
+The following is an example to show you what vales are expected from the user during the configuration.
+
 http.port `9090` 
 
 #### SalesForce Connector configuration for company A
@@ -100,22 +102,24 @@ CSV Report [DataWeave](http://www.mulesoft.org/documentation/display/current/Dat
 An [Object to string transformer](http://www.mulesoft.org/documentation/display/current/Transformers) is used to set the payload as an String. 
 
 #### default_error_handling_xml
-This is the right place to handle how your integration will react depending on the different exceptions. 
+This is the right place to handle how your integration will respond to different types of exceptions. 
 This file holds a [Choice Exception Strategy](http://www.mulesoft.org/documentation/display/current/Choice+Exception+Strategy) that is referenced by the main flow in the business logic.
 
-If there is an error in *gatherDataFlow* when obtaining data for aggregation, it will be at first handled in *UserMergeAggregationStrategy* class. Scatter-gather component is using this custom aggregation strategy class which overrides its default aggregation strategy to perform aggregation of the retrieved data with desired error handling. For more details click [here](https://docs.mulesoft.com/mule-user-guide/v/3.7/scatter-gather#scatter-gather-behavior-and-exceptions). After that an error will be routed to errorHandling.xml.
+If there is an error in *gatherDataFlow* while obtaining data for aggregation, it will be first handled in *UserMergeAggregationStrategy* class. Scatter-gather component uses this custom aggregation strategy class which overrides its default aggregation strategy to perform aggregation of the retrieved data with desired error handling. For more details click [here](https://docs.mulesoft.com/mule-user-guide/v/3.7/scatter-gather#scatter-gather-behavior-and-exceptions). After that the error will be routed to errorHandling.xml.
 
-In the case no data could be obtained from connectors, relevant error will be thrown out of the *UserMergeAggregationStrategy* class. In the errorHandling.xml it will be routed to the correct catch block under the *defaultChoiceExceptionStrategy*. Each error specified in the catch block can be treated different way. Now there are three different kinds of errors specified:
+In the case that no data was obtained from the end points, the appropriate  error will be thrown from the *UserMergeAggregationStrategy* flow. Based on the flow definitions in the errorHandling.xml file, the error will then be routed to the correct catch block under the *defaultChoiceExceptionStrategy*. Each error specified in the catch block can be treated in a different way. 
+
+In this application, there are three different kinds of errors specified:
 
 *LoginFault* Exception - occurs in the case of incorrect Salesforce credentials
-*InvalidFieldFault* Exception - occurs in the case that newly added column name in the Salesforce query is not present in the specified table (could be used for the custom defined fields)
+*InvalidFieldFault* Exception - occurs in the case that a newly added column name in the Salesforce query is not present in the specified table (could be used for the custom defined fields)
 *Exception* - any other exception except the previous two
 
-New exceptions can be added and treated required way in errorHandling.xml file.
+New exceptions can be added and caught in the errorHandling.xml file.
 
-Data obtained from just one route while the one one failed is considered recoverable scenario. No error message is logged and data from one route are processed expected way. This can be changed in the *UserMergeAggregationStrategy* class.
+Data obtained from just one route while the other source fails is considered a recoverable scenario. No error message is logged and the data is processed. This can be changed in the *UserMergeAggregationStrategy* class.
 
-All included connectors supports [Reconnection Strategies](https://docs.mulesoft.com/mule-user-guide/v/3.7/configuring-reconnection-strategies). Reconnection Strategies specify how a connector behaves when its connection fails. In this template all connectors have standard reconnection strategy specified to 5 reconnection attempts with frequency 5000ms. You can change reconnection strategy in connector configuration window by selecting tab *Reconnection*.
+All included connectors support [Reconnection Strategies](https://docs.mulesoft.com/mule-user-guide/v/3.7/configuring-reconnection-strategies). Reconnection Strategies specify how a connector behaves when its connection fails. In this template all connectors have standard reconnection strategy specified to 5 reconnection attempts with frequency 5000ms. You can change reconnection strategy in connector configuration window by selecting tab *Reconnection*.
 
 ### Api calls ###
 SalesForce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. User Anypoint Template calls to the API can be calculated using the formula:
