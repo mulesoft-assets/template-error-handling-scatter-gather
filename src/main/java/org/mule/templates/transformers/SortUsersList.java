@@ -8,7 +8,6 @@ package org.mule.templates.transformers;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractMessageTransformer;
-
-import com.google.common.collect.Lists;
 
 /**
  * This transformer will take to list as input and create a third one that will
@@ -67,7 +64,7 @@ public class SortUsersList extends AbstractMessageTransformer {
 	@Override
 	public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {
 
-		List<Map<String, String>> sortedUsersList = Lists.newArrayList((Iterator<Map<String, String>>) message.getPayload());
+		List<Map<String, String>> sortedUsersList = (List<Map<String, String>>) message.getPayload();
 
 		Collections.sort(sortedUsersList, recordComparator);
 
