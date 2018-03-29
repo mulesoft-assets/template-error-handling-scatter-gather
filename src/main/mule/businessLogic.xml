@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="mainFlow" doc:id="5f8a7b49-a6a7-491d-ad9e-52a93c2fec41">
+		<scatter-gather doc:name="Scatter-Gather"
+			doc:id="56593045-c26f-4fdd-9110-d26434e8905d">
+			<route>
+				<salesforce:query doc:name="query all users from SalesForce instance A"
+					doc:id="9cdb3a37-6dbe-487b-a061-1a82a296ddab" config-ref="Salesforce_Sfdc_config">
+					<salesforce:salesforce-query>SELECT Name, Email, Username, Id FROM
+						User
+					</salesforce:salesforce-query>
+				</salesforce:query>
+			</route>
+			<route>
+				<db:select doc:name="query all users from the DB" doc:id="ef6a37f8-f06e-4fd0-b1b4-ae7c643d2225"
+					config-ref="Database_Config">
+					<db:sql>SELECT * FROM users</db:sql>
+				</db:select>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Aggregate results and transform to CSV"
+			doc:id="7c4fdda6-d7da-4b56-8481-820e2fd94db3">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/csv
+import mergeWith from dw::core::Objects
+var usersA = payload["0"].payload map (user) -> {
+	"UserNameInA": user.Name,
+	"IDInA": user.Id,
+	"Email": user.Email,
+	"Name": user.Name
+}
+var usersB = payload["1"].payload map (user) -> {
+	"UserNameInB": user.Name,
+	"IDInB": user.Id,
+	"Email": user.Email,
+	"Name": user.Name
+}
+var mergedUsers =  (
+                usersA map ((item) -> item mergeWith ((usersB filter ($.Email == item.Email))[0] 
+                    default {IDInB: "", UserNameInB: ""}
+                ))
+            ) distinctBy $.Name
+            ++ (
+                usersB map ((item) -> item mergeWith ((usersA filter ($.Email == item.Email))[0] 
+                    default {IDInA: "", UserNameInA: ""}
+                ))
+            ) distinctBy $.Name
+fun sortBySourceExistence (users) = ((users map (user) -> (
+        user ++ {
+            sortValue:  if ((user.IDInA != "") and (user.IDInB == "")) 1 
+                        else if ((user.IDInB != "") and (user.IDInA == "")) 2 
+                        else 3
+        }
+    )
+) orderBy $.sortValue ) map $ -"sortValue"
+---
+sortBySourceExistence(mergedUsers) map (user) -> {
+	"Name": user.Name,
+	"Email": user.Email,
+	"UserNameInA": user.UserNameInA,
+	"IDInA": user.IDInA,
+	"UserNameInB": user.UserNameInB,
+	"IDInB": user.IDInB
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<email:send config-ref="Gmail_SMTP" doc:name="Send migration result email"
+			doc:id="5896eaa9-dd10-47a2-a6fc-6319b11dbd06" fromAddress="${mail.from}"
+			subject="${mail.subject}">
+			<email:to-addresses>
+				<email:to-address value="${mail.to}" />
+			</email:to-addresses>
+			<email:body contentType="text/plain">
+				<email:content><![CDATA[${mail.body}]]></email:content>
+			</email:body>
+			<email:attachments><![CDATA[#[{'${attachment.name}' : payload}]]]></email:attachments>
+		</email:send>
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="90454dee-fd28-4c88-921b-ca5c3c9e0b14"
+				type="MULE:COMPOSITE_ROUTING">
+				<choice doc:name="Choice" doc:id="d2aad34f-6ad8-4cb3-94b3-5eda3da1db66">
+					<when
+						expression='#[error.errors[0].errorType.namespace == "SALESFORCE" and error.errors[0].errorType.identifier == "CONNECTIVITY"]'>
+						<flow-ref doc:name="loginFaultErrorFlow" doc:id="0d4febfd-9523-474d-870d-4de3c21f42b4"
+							name="loginErrorHandling" />
+					</when>
+					<when
+						expression='#[error.errors[0].errorType.namespace == "SALESFORCE" and error.errors[0].errorType.identifier == "UNKNOWN"]'>
+						<flow-ref doc:name="invalidFieldErrorHandling" doc:id="0f3e5396-b897-47be-9e96-6b48e74b0243"
+							name="invalidFieldErrorHandling" />
+					</when>
+					<otherwise>
+						<flow-ref doc:name="defaultErrorHandling" doc:id="3206365d-b960-40df-8e64-da9a353ab1f5"
+							name="defaultErrorHandling" />
+					</otherwise>
+				</choice>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="7997d9dd-79e4-4673-91b2-c3afc2c45a25">
+				<flow-ref doc:name="defaultErrorHandling" doc:id="bd40db85-01e1-4a63-bbd4-193c830712c7"
+					name="defaultErrorHandling" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
