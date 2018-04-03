@@ -54,8 +54,7 @@ This template is customized for MySQL. To use it with different SQL implementati
 
 * update SQL script dialect to desired one
 * replace MySQL driver library dependency to desired one in [POM](pom.xml)
-* replace attribute `driverClassName` of `db:generic-config` element with class name of desired JDBC driver in [src/main/mule/config.xml](../master/src/main/mule/config.xml)
-* update JDBC URL in `mule.*.properties` file
+* update Database connector configuration in [src/main/mule/config.xml](../master/src/main/mule/config.xml) and `mule.*.properties` file
 
 ## Salesforce Considerations <a name="salesforceconsiderations"/>
 
