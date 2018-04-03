@@ -26,9 +26,9 @@ Note that using this template is subject to the conditions of this [License Agre
 Please review the terms of the license before downloading and using this template. In short, you are allowed to use the template for free with Mule ESB Enterprise Edition, CloudHub, or as a trial in Anypoint Studio.
 
 # Use Case <a name="usecase"/>
-This Template should serve as a foundation for the process of aggregation accounts from Salesforce and Database Instances and compare them to see which accounts can only be found in one of the two and which accounts are in both instances.
+This Template should serve as a foundation for the process of aggregation users from Salesforce and Database Instances and compare them to see which users can only be found in one of the two and which users are in both instances.
 
-As implemented, it gets two accounts, one from Salesforce and other from Database instance. Then it compares by the name of the accounts, and generates a CSV file which shows accounts in A, accounts in B, and accounts in A and B. The report is then e-mailed to a configured group of e-mail addresses.
+As implemented, it gets two users, one from Salesforce and other from Database instance. Then it compares by the name of the users, and generates a CSV file which shows users in A, users in B, and users in A and B. The report is then e-mailed to a configured group of e-mail addresses.
 
 For practical purposes this Template will generate the result in the format of a CSV Report sent by mail.
 
@@ -167,8 +167,8 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + mail.from `your@email.com`
 + mail.to `your@email.com`
 + mail.subject `Mail subject`
-+ mail.body `Please find attached your Accounts Report`
-+ attachment.name `accounts_report.csv`
++ mail.body `Please find attached your Users Report`
++ attachment.name `users_report.csv`
 
 # API Calls <a name="apicalls"/>
 Salesforce imposes limits on the number of API Calls that can be made. However, we make API call to Salesforce only once during aggregation.
