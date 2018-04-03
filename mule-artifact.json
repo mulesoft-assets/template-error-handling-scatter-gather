@@ -1,0 +1,23 @@
+{
+  "configs": [
+    "businessLogic.xml",
+    "config.xml",
+    "endpoints.xml",
+    "errorHandling.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "template-error-handling-scatter-gather",
+  "minMuleVersion": "4.1.1",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

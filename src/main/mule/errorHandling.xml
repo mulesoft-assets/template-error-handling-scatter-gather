@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="loginErrorHandling" doc:id="07c17075-247b-4db6-903b-3919f94e0a3f">
+		<logger level="ERROR" doc:name="Log error message"
+			doc:id="799d4503-6706-4522-b773-db5a14bbf9a2"
+			message="Invalid Salesforce credentials, security token or user locked out. Please, check if credentials weren't changed." />
+		<tracking:custom-event doc:name="Custom Business Event"
+			doc:id="4cf2097e-8acf-4392-902c-8ed6e9cb75d8"
+			event-name="Invalid Salesforce credentials, security token or user locked out">
+			<tracking:meta-data key="possible solution"
+				value="Please, check if credentials weren't changed." />
+		</tracking:custom-event>
+	</flow>
+	<flow name="invalidFieldErrorHandling" doc:id="5356fd14-dec6-4b2a-8070-ed54cc72d8c7">
+		<logger level="ERROR" doc:name="Log error message"
+			doc:id="799d4503-6706-4522-b773-db5a14bbf9a2"
+			message="Unknow Salesforce error. Please, check the query to Salesforce and component settings" />
+		<tracking:custom-event doc:name="Custom Business Event"
+			doc:id="4cf2097e-8acf-4392-902c-8ed6e9cb75d8" event-name="Unknow Salesforce error">
+			<tracking:meta-data key="possible solution"
+				value='Please, check the query to Salesforce and component settings' />
+		</tracking:custom-event>
+	</flow>
+	<flow name="defaultErrorHandling" doc:id="75b959ab-3226-45fd-bcc8-c7a93170a1c4">
+		<logger level="ERROR" doc:name="Log error message"
+			doc:id="799d4503-6706-4522-b773-db5a14bbf9a2" message="#[payload]" />
+		<tracking:custom-event doc:name="Custom Business Event"
+			doc:id="5f4fee46-c281-4948-ad6f-f0855f34ec26" event-name="ERROR">
+			<tracking:meta-data key="payload" value="#[payload]" />
+		</tracking:custom-event>
+	</flow>
+
+</mule>

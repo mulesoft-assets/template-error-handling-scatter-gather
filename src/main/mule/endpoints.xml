@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="endpointsFlow" doc:id="1afd61a6-be4c-49b3-a6f4-bb4174de0d8d">
+		<http:listener doc:name="Start Report Generation"
+			doc:id="99ee487b-4678-410a-80ee-642262db0f70" config-ref="HTTP_Listener_config"
+			path="/generatereport" />
+		<flow-ref doc:name="mainFlow" doc:id="4656b1c6-e722-43e4-84de-70d50fde1744"
+			name="mainFlow" />
+	</flow>
+</mule>
