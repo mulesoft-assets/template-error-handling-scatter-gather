@@ -8,7 +8,7 @@
     </parent>
     <artifactId>template-error-handling-scatter-gather</artifactId>
     <packaging>mule-application</packaging>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.1.0</version>
     <name>template-error-handling-scatter-gather</name>
     <build>
         <plugins>
@@ -63,4 +63,8 @@
             <layout>default</layout>
         </repository>
     </repositories>
+
+  <scm>
+    <tag>v2.1.0</tag>
+  </scm>
 </project>
