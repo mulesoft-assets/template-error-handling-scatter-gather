@@ -1,10 +1,10 @@
 
-# template: Error handling Scatter-Gather
+# Anypoint Template: Error handling Scatter-Gather
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
 + [Considerations](#considerations)
-	* [database Considerations](#dbconsiderations)
+	* [Database Considerations](#dbconsiderations)
 	* [Salesforce Considerations](#salesforceconsiderations)
 + [Run it!](#runit)
 	* [Running on premise](#runonopremise)
@@ -39,7 +39,7 @@ To make this template run, there are certain preconditions that must be consider
 
 
 
-## database Considerations <a name="dbconsiderations"/>
+## Database Considerations <a name="dbconsiderations"/>
 
 This template illustrates the aggregation use case between SalesForce and a Database, thus it requires a database instance to work.
 
@@ -104,7 +104,7 @@ First thing to know if you are a newcomer to Mule is where to get the tools.
 + You can download Mule ESB from this [Location](http://www.mulesoft.com/platform/soa/mule-esb-open-source-esb)
 
 
-### Importing an template into Studio
+### Importing a template into Studio
 Mule Studio offers several ways to import a project into the workspace, for instance:
 
 + Anypoint Studio Project from File System
