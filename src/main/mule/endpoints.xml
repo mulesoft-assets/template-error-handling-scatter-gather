@@ -9,7 +9,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener doc:name="Start Report Generation"
 			doc:id="99ee487b-4678-410a-80ee-642262db0f70" config-ref="HTTP_Listener_config"
 			path="/generatereport" />
-		<flow-ref doc:name="mainFlow" doc:id="4656b1c6-e722-43e4-84de-70d50fde1744"
-			name="mainFlow" />
+		<flow-ref doc:name="Reference to businessLogicSubFlow" doc:id="dcac4637-20df-4452-aa0f-bf5251d66880" name="businessLogicSubFlow" />
+		<flow-ref doc:name="Reference to businessLogicFlow" doc:id="4656b1c6-e722-43e4-84de-70d50fde1744"
+			name="businessLogicFlow" />
 	</flow>
 </mule>

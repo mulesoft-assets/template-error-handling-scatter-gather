@@ -10,21 +10,20 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<flow name="mainFlow" doc:id="5f8a7b49-a6a7-491d-ad9e-52a93c2fec41">
+	<flow name="businessLogicFlow" doc:id="5f8a7b49-a6a7-491d-ad9e-52a93c2fec41">
 		<scatter-gather doc:name="Scatter-Gather"
 			doc:id="56593045-c26f-4fdd-9110-d26434e8905d">
 			<route>
 				<salesforce:query doc:name="query all users from SalesForce instance A"
 					doc:id="9cdb3a37-6dbe-487b-a061-1a82a296ddab" config-ref="Salesforce_Sfdc_config">
-					<salesforce:salesforce-query>SELECT Name, Email, Username, Id FROM
-						User
+					<salesforce:salesforce-query>#[payload.query]
 					</salesforce:salesforce-query>
 				</salesforce:query>
 			</route>
 			<route>
 				<db:select doc:name="query all users from the DB" doc:id="ef6a37f8-f06e-4fd0-b1b4-ae7c643d2225"
 					config-ref="Database_Config">
-					<db:sql>SELECT * FROM users</db:sql>
+					<db:sql>SELECT * FROM `users`</db:sql>
 				</db:select>
 			</route>
 		</scatter-gather>
@@ -114,4 +113,16 @@ sortBySourceExistence(mergedUsers) map (user) -> {
 			</on-error-continue>
 		</error-handler>
 	</flow>
+	<sub-flow name="businessLogicSubFlow" doc:id="fe0653c9-f591-49b4-bbcd-fc1d692bae5d" >
+		<ee:transform doc:name="Prepare query to Salesforce" doc:id="1e071e56-90c1-49d3-8f96-d59ce74afb77" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"query" : "SELECT Name, Email, Username, Id FROM User"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
 </mule>

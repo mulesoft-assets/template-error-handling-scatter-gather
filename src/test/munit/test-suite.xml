@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="605922e9-09b0-4222-a9be-649adaa5bb6a" file="mule.test.properties" />
+	<munit:before-test name="test-suiteBefore_Test" description="Before tests actions" doc:id="387ec25a-7b79-4c49-aa73-5d8a5e29effe" >
+		<db:insert doc:name="Insert to Users table" doc:id="7673c584-6218-405d-a371-dddf1ea90062" config-ref="Database_Config">
+			<db:sql>INSERT INTO `users` (`id`,`username`,`name`,`email`) VALUES 
+('074a8d46-1db3-11e6-8d57-54ee7534a10b','Kevin','Peterson','kevin.peterson@test.com'),
+('2e1c66e5-1db8-11e6-8d57-54ee7534a10b','john Doe','john Doe','john.doe@somedomain.com');</db:sql>
+		</db:insert>
+		<munit-tools:mock-when doc:name="Mock email processor to avoid sending email" doc:id="71e2a82f-caf2-4339-890f-7e08479a407f" processor="email:send" >
+			<munit-tools:then-return />
+		</munit-tools:mock-when>
+	</munit:before-test>
+	<munit:test name="test-suiteTest" description="MUnit Test" doc:id="8dd2663d-275c-4323-8a2e-2cdea713a85d" >
+		<munit:execution>
+			<flow-ref doc:name="Reference to businessLogicSubFlow" doc:id="647d3f3a-3a34-485c-a15c-91e5c10e1ae9" name="businessLogicSubFlow"/>
+			<flow-ref doc:name="Reference to businessLogicFlow" doc:id="f4c74692-9556-41a8-8fd8-38da2a8d7dc3" name="businessLogicFlow"/>
+			<ee:transform doc:name="Filtering test records" doc:id="9453fcbf-5936-4810-ade2-3cdb0bf58dd2">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload filter ($.Email == p('test.email.db') or $.Email == p('test.email.sfdc') or $.Email == p('test.email.db.sfdc'))]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert number of records" doc:id="237bfb72-6496-4ad0-aea1-a703bc98d9f4" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(3)]" message="Assert number of records"/>
+			<munit-tools:assert-that doc:name="Assert that email in the first record is correct" doc:id="dcff6062-5168-475a-8140-72a0aa7b584f" expression="#[payload[0].Email]" is="#[MunitTools::equalTo(p('test.email.sfdc'))]" message="The first record is incorrect"/>
+			<munit-tools:assert-that doc:name="Assert that first record exists in Salesforce" doc:id="eef12d55-de46-49c3-aed7-81b629db7cc8" expression="#[payload[0].IDInA]" is="#[MunitTools::not(MunitTools::isEmptyOrNullString())]" message="The first record doesn't exist in Salesforce"/>
+			<munit-tools:assert-that doc:name="Assert that first record does not exist in DB" doc:id="9e3f4725-633e-4eeb-9edf-7a1c6d989aed" expression="#[payload[0].IDInB]" is="#[MunitTools::isEmptyOrNullString()]" message="The first record exists in DB"/>
+			<munit-tools:assert-that doc:name="Assert that email in the second record is correct" doc:id="0e77e145-a0cf-4bc5-97e4-80db88dfd0ab" expression="#[payload[1].Email]" is="#[MunitTools::equalTo(p('test.email.db'))]" message="The second record is incorrect"/>
+			<munit-tools:assert-that doc:name="Assert that second record does not exist in Salesforce" doc:id="f4ed03f3-e8cc-437a-86d7-abd581c66fa1" expression="#[payload[1].IDInA]" is="#[MunitTools::isEmptyOrNullString()]" message="The second record exists in Salesforce"/>
+			<munit-tools:assert-that doc:name="Assert that second record exists in DB" doc:id="68821749-4f02-41a5-a4c6-0b2f4e7ee19a" expression="#[payload[1].IDInB]" is="#[MunitTools::not(MunitTools::isEmptyOrNullString())]" message="The second record doesn't exist in DB"/>
+			<munit-tools:assert-that doc:name="Assert that email in the third record is correct" doc:id="672eac25-17c6-4d91-82d6-7a769d6c7a1a" expression="#[payload[2].Email]" is="#[MunitTools::equalTo(p('test.email.db.sfdc'))]" message="The third record is incorrect"/>
+			<munit-tools:assert-that doc:name="Assert that third record exists in Salesforce" doc:id="87aa7ca7-74fa-464c-9222-bdcbcf58f8a4" expression="#[payload[2].IDInA]" is="#[MunitTools::not(MunitTools::isEmptyOrNullString())]" message="The third record doesn't exist in Salesforce"/>
+			<munit-tools:assert-that doc:name="Assert that third record exists in DB" doc:id="3610f902-dbcc-4750-baea-6ed63ce8e870" expression="#[payload[2].IDInB]" is="#[MunitTools::not(MunitTools::isEmptyOrNullString())]" message="The third record doesn't exist in DB"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="error-test-suiteTest" description="MUnit Test" doc:id="9d4cf2bd-3aaa-49de-88fd-d3b18974c1f5" expectedErrorType="ANY">
+		<munit:execution >
+			<flow-ref doc:name="Reference to businessLogicFlow" doc:id="784016e5-ad41-46ba-8bc7-75d0f2de9aa6" name="businessLogicFlow" />
+			<ee:transform doc:name="Filtering test records" doc:id="084566d7-8200-4a81-9650-910fdd25647a">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload filter ($.Email == p('test.email.db') or $.Email == p('test.email.sfdc') or $.Email == p('test.email.db.sfdc'))]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that if number of records is 0" doc:id="a521c144-bbc4-4cb5-beff-7faf87ff35be" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(0)]" message="Assert number of records"/>
+		</munit:validation>
+	</munit:test>
+	<munit:after-test name="test-suiteAfter_Test" description="After tests actions" doc:id="29fbf0f9-8250-474b-84a7-391cc65bf43c" >
+		<db:delete doc:name="Delete from Users table" doc:id="40548961-d730-4982-9973-b98eb7b9a0a7" config-ref="Database_Config" >
+			<db:sql >DELETE FROM `users`</db:sql>
+		</db:delete>
+	</munit:after-test>
+
+
+</mule>
