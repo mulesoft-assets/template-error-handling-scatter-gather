@@ -13,16 +13,18 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<munit:before-test name="test-suiteBefore_Test" description="Before tests actions" doc:id="387ec25a-7b79-4c49-aa73-5d8a5e29effe" >
 		<db:insert doc:name="Insert to Users table" doc:id="7673c584-6218-405d-a371-dddf1ea90062" config-ref="Database_Config">
 			<db:sql>INSERT INTO `users` (`id`,`username`,`name`,`email`) VALUES 
-('074a8d46-1db3-11e6-8d57-54ee7534a10b','Kevin','Peterson','kevin.peterson@test.com'),
-('2e1c66e5-1db8-11e6-8d57-54ee7534a10b','john Doe','john Doe','john.doe@somedomain.com');</db:sql>
+('074a8d46-1db3-11e6-8d57-54ee7534a10b','TestKevin 1477','TestPeterson 3355',:email1),
+('2e1c66e5-1db8-11e6-8d57-54ee7534a10b','Test Test1145','Test Test1145',:email2);</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'email1' : p('test.email.db'),
+	'email2' : p('test.email.db.sfdc')
+}]]]></db:input-parameters>
 		</db:insert>
-		<munit-tools:mock-when doc:name="Mock email processor to avoid sending email" doc:id="71e2a82f-caf2-4339-890f-7e08479a407f" processor="email:send" >
-			<munit-tools:then-return />
-		</munit-tools:mock-when>
+		<munit-tools:mock-when doc:name="Mock email processor to avoid sending email" doc:id="72f278d9-d2a9-4c1a-9fa3-49ac1256dd10" processor="email:send" />
 	</munit:before-test>
 	<munit:test name="test-suiteTest" description="MUnit Test" doc:id="8dd2663d-275c-4323-8a2e-2cdea713a85d" >
 		<munit:execution>
-			<flow-ref doc:name="Reference to businessLogicSubFlow" doc:id="647d3f3a-3a34-485c-a15c-91e5c10e1ae9" name="businessLogicSubFlow"/>
+			<flow-ref doc:name="Reference to prepareQueryToSalesforceSubFlow" doc:id="647d3f3a-3a34-485c-a15c-91e5c10e1ae9" name="prepareQueryToSalesforceSubFlow"/>
 			<flow-ref doc:name="Reference to businessLogicFlow" doc:id="f4c74692-9556-41a8-8fd8-38da2a8d7dc3" name="businessLogicFlow"/>
 			<ee:transform doc:name="Filtering test records" doc:id="9453fcbf-5936-4810-ade2-3cdb0bf58dd2">
 				<ee:message>
@@ -64,7 +66,11 @@ payload filter ($.Email == p('test.email.db') or $.Email == p('test.email.sfdc')
 	</munit:test>
 	<munit:after-test name="test-suiteAfter_Test" description="After tests actions" doc:id="29fbf0f9-8250-474b-84a7-391cc65bf43c" >
 		<db:delete doc:name="Delete from Users table" doc:id="40548961-d730-4982-9973-b98eb7b9a0a7" config-ref="Database_Config" >
-			<db:sql >DELETE FROM `users`</db:sql>
+			<db:sql >DELETE FROM `users` WHERE email IN (:email1, :email2)</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'email1' : p('test.email.db'),
+	'email2' : p('test.email.db.sfdc')
+}]]]></db:input-parameters>
 		</db:delete>
 	</munit:after-test>
 

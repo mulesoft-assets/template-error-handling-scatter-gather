@@ -113,7 +113,7 @@ sortBySourceExistence(mergedUsers) map (user) -> {
 			</on-error-continue>
 		</error-handler>
 	</flow>
-	<sub-flow name="businessLogicSubFlow" doc:id="fe0653c9-f591-49b4-bbcd-fc1d692bae5d" >
+	<sub-flow name="prepareQueryToSalesforceSubFlow" doc:id="fe0653c9-f591-49b4-bbcd-fc1d692bae5d" >
 		<ee:transform doc:name="Prepare query to Salesforce" doc:id="1e071e56-90c1-49d3-8f96-d59ce74afb77" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

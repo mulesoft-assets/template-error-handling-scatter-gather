@@ -5,17 +5,13 @@
     <parent>
         <groupId>org.mule.templates</groupId>
         <artifactId>templates-tooling-parent-pom</artifactId>
-        <version>2.1.15</version>
+        <version>2.1.16</version>
     </parent>
     
     <artifactId>template-error-handling-scatter-gather</artifactId>
     <packaging>mule-application</packaging>
     <version>2.1.1-SNAPSHOT</version>
     <name>template-error-handling-scatter-gather</name>
-    
-    <properties>
-        <mysql.connector.version>8.0.13</mysql.connector.version>
-    </properties>
     
     <dependencies>
         <dependency>
@@ -36,7 +32,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
